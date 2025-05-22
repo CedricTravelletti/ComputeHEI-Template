@@ -1,0 +1,14 @@
+[project]
+name = "mypackage"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jupyter>=1.1.1",
+]
+
+# Set curent project as a package, with src/ folder.
+[tool.uv]
+package = true
+

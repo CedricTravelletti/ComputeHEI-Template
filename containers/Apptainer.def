@@ -1,0 +1,42 @@
+# Minimal apptainer definition file for a Python project based on uv.
+Bootstrap: docker
+From: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+
+%labels
+    Maintainer "John Doe"
+    Version "0.1"
+
+%files 
+  # Copy project root to pre-install dependencies.
+  ../ /opt/apptainer_build
+
+%post
+    echo "**** Installing system dependencies ****"
+    apt-get update && apt-get install -y git curl && apt-get clean
+
+    # Example install dependencies. Adapt to your needs.
+    # apt-get install -y libgomp1
+
+    cd /opt/apptainer_build
+
+    # Pre-install dependencies in a virtual environment
+    uv venv
+    . .venv/bin/activate
+    uv sync
+
+%environment
+    export JUPYTER_PORT="8888"  # default Jupyter port
+    export PATH="/opt/apptainer_build/.venv/bin:$HOME/.local/bin:$PATH"
+    export VIRTUAL_ENV="/opt/apptainer_build/.venv"
+
+    # Where the code will be on the host.
+    export PROJECT_DIR="/code"
+
+%runscript
+    echo "Running job with code at $PROJECT_DIR"
+    source $VIRTUAL_ENV/bin/activate
+    cd $PROJECT_DIR
+    uv pip install -e .
+
+    echo "Starting Jupyter Notebook on port $JUPYTER_PORT ..."
+    uv run jupyter-notebook --ip=0.0.0.0 --port=$JUPYTER_PORT --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''

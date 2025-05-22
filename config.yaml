@@ -1,0 +1,8 @@
+# # This file centralizes configurations for the project.
+# Can be used to change default data locations and download URLs 
+# in case they evolve. 
+# These configurations are handled by src/mypackage/config.py
+# All paths are relative to the project root.
+
+# Base data folder.
+data_folder: data/
